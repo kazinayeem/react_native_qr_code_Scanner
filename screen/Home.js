@@ -75,7 +75,7 @@ function HomeScreen() {
   };
   const saveimg = () => {
     try {
-      const newPath = RNFS.PicturesDirectoryPath + Date.now() + 'qr.jpg';
+      const newPath = RNFS.DownloadDirectoryPath + Date.now() + 'qr.jpg';
       RNFS.moveFile(imgpath, newPath)
         .then(r => {
           console.log('move done');
@@ -112,6 +112,7 @@ function HomeScreen() {
         }}>
         <TextInput
           onChangeText={text => setdata(text)}
+          textAlign="center"
           style={{
             color: '#000000',
             width: 300,
@@ -143,7 +144,7 @@ function HomeScreen() {
             height: 200,
             bottom: 40,
             alignContent: 'center',
-            flex: 1,
+          
           }}
           source={{uri: `data:image/gif;base64,${imageurl}`}}
         />

@@ -34,6 +34,7 @@ export default function App() {
           options={{
             title: 'HOME',
             unmountOnBlur: true,
+            headerShown: false,
           }}
           component={HomeScreen}
         />
