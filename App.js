@@ -3,7 +3,7 @@ import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import HomeScreen from './screen/Home';
-import SettingsScreen from './screen/SettingsScreen';
+// import SettingsScreen from './screen/SettingsScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ScanScreen from './screen/QrCode';
 const Tab = createBottomTabNavigator();
@@ -18,13 +18,9 @@ export default function App() {
             let iconName;
 
             if (route.name === 'Home') {
-              iconName = focused
-                ? 'ios-information-circle'
-                : 'ios-information-circle-outline';
-            } else if (route.name === 'Settings') {
-              iconName = focused ? 'ios-list' : 'ios-list-outline';
+              iconName = focused ? 'qr-code' : 'qr-code';
             } else if (route.name === 'QrCode') {
-              iconName = focused ? 'ios-list' : 'ios-list-outline';
+              iconName = focused ? 'qr-code' : 'qr-code';
             }
 
             // You can return any component that you like here!
@@ -37,6 +33,7 @@ export default function App() {
           name="Home"
           options={{
             title: 'HOME',
+            unmountOnBlur: true,
           }}
           component={HomeScreen}
         />

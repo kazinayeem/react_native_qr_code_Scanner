@@ -49,12 +49,12 @@ function HomeScreen() {
                 {
                   text: 'COPY',
                   onPress: () => {
-                    Clipboard.setString(res.values.toString()),
-                      ToastAndroid.show(
-                        'copy successfull',
-                        ToastAndroid.SHORT,
-                        ToastAndroid.TOP,
-                      );
+                    Clipboard.setString(res.values.toString());
+                    ToastAndroid.show(
+                      'copy successfull',
+                      ToastAndroid.SHORT,
+                      ToastAndroid.TOP,
+                    );
                   },
                 },
                 {
@@ -93,13 +93,13 @@ function HomeScreen() {
       <TouchableOpacity
         onPress={upload}
         style={{
-          backgroundColor: '#00F4F4E2',
+          backgroundColor: '#18AC96',
           width: 300,
           top: 10,
           height: 30,
           justifyContent: 'center',
           alignItems: 'center',
-          elevation: 3,
+          elevation: 5,
         }}>
         <Text style={{color: 'black'}}>Uplaod From Gallery</Text>
       </TouchableOpacity>
@@ -123,17 +123,31 @@ function HomeScreen() {
           }}
         />
 
-        <Button color={'#00FFC8'} onPress={makeqrcode} title="Make QR CODE" />
+        <Button color={'#0FAB89'} onPress={makeqrcode} title="Make QR CODE" />
       </View>
-      <Image
-        style={{
-          width: 200,
-          height: 200,
-          bottom: 40,
-          alignContent: 'center',
-        }}
-        source={{uri: `data:image/gif;base64,${imageurl}`}}
-      />
+      {!imageurl ? (
+        <Text
+          style={{
+            textAlign: 'center',
+            justifyContent: 'center',
+
+            fontSize: 25,
+            fontFamily: 'Roboto-BoldItalic',
+          }}>
+          no text found!!
+        </Text>
+      ) : (
+        <Image
+          style={{
+            width: 200,
+            height: 200,
+            bottom: 40,
+            alignContent: 'center',
+            flex: 1,
+          }}
+          source={{uri: `data:image/gif;base64,${imageurl}`}}
+        />
+      )}
 
       <Button onPress={saveimg} title="save image" />
     </View>

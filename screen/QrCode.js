@@ -1,15 +1,16 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
-
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
   StyleSheet,
   Text,
   TouchableOpacity,
   Alert,
   View,
+  ToastAndroid,
   LogBox,
 } from 'react-native';
-
+import Clipboard from '@react-native-clipboard/clipboard';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera} from 'react-native-camera';
 
@@ -19,7 +20,7 @@ LogBox.ignoreLogs([
 export default class ScanScreen extends Component {
   state = {
     back: false,
-    flash: true,
+    flash: false,
   };
 
   changeCamera = () => {
@@ -34,7 +35,24 @@ export default class ScanScreen extends Component {
     });
   };
   onSuccess = e => {
-    Alert.alert(e.data);
+    Alert.alert('Result ', e.data, [
+      {
+        text: 'COPY',
+        onPress: () => {
+          Clipboard.setString(e.data);
+          ToastAndroid.show(
+            'copy successfull',
+            ToastAndroid.SHORT,
+            ToastAndroid.TOP,
+          );
+        },
+      },
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+    ]);
   };
 
   render() {
@@ -48,7 +66,11 @@ export default class ScanScreen extends Component {
           ref={node => (this.scanner = node)}
           cameraType={this.state.back ? 'front' : 'back'}
           onRead={this.onSuccess}
-          flashMode={RNCamera.Constants.FlashMode.on}
+          flashMode={
+            this.state.flash
+              ? RNCamera.Constants.FlashMode.torch
+              : RNCamera.Constants.FlashMode.off
+          }
           topContent={
             <View
               style={{
@@ -61,7 +83,7 @@ export default class ScanScreen extends Component {
                 onPress={this.flashController}
                 style={{
                   flex: 40,
-                  backgroundColor: '#4BBB3F',
+                  backgroundColor: '#44B038',
                   width: 300,
                   height: 30,
                   elevation: 3,
@@ -74,7 +96,11 @@ export default class ScanScreen extends Component {
                     fontFamily: 'Roboto-BoldItalic',
                     textAlign: 'center',
                   }}>
-                  ON/OFF
+                  {this.state.flash ? (
+                    <Icon name="flashlight-off" size={25} color="#FFFFFF" />
+                  ) : (
+                    <Icon name="flashlight" size={25} color="#FFFFFF" />
+                  )}
                 </Text>
               </TouchableOpacity>
 
@@ -82,28 +108,21 @@ export default class ScanScreen extends Component {
                 onPress={this.changeCamera}
                 style={{
                   flex: 40,
-                  backgroundColor: '#4BBB3F',
+                  backgroundColor: '#348B2A',
                   width: 300,
                   height: 30,
                   elevation: 3,
                   borderRadius: 10,
                   marginTop: 5,
+                  alignItems: 'center',
                 }}>
-                <Text
-                  style={{
-                    color: '#FFFFFF',
-                    fontFamily: 'Roboto-BoldItalic',
-                    textAlign: 'center',
-                  }}>
-                  FONT/BACK
-                </Text>
+                {this.state.back ? (
+                  <Icon name="camera-front" size={25} color="#FFFFFF" />
+                ) : (
+                  <Icon name="camera-rear" size={25} color="#FFFFFF" />
+                )}
               </TouchableOpacity>
             </View>
-          }
-          bottomContent={
-            <TouchableOpacity style={styles.buttonTouchable}>
-              <Text style={styles.buttonText}>OK. Got it!</Text>
-            </TouchableOpacity>
           }
         />
       </View>
