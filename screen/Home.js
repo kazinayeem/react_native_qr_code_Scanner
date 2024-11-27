@@ -9,13 +9,64 @@ import {
   ToastAndroid,
 } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import ImagePicker from 'react-native-image-crop-picker';
-import {TouchableOpacity} from 'react-native';
+import {TouchableOpacity, Platform, PermissionsAndroid} from 'react-native';
 import RNQRGenerator from 'rn-qr-generator';
 import RNFS from 'react-native-fs';
+import {Linking} from 'react-native';
+
+Alert.alert(
+  'Permission Required',
+  'You have denied storage permission. Please enable it in your app settings.',
+  [
+    { text: 'Cancel', style: 'cancel' },
+    {
+      text: 'Open Settings',
+      onPress: () => Linking.openSettings(),
+    },
+  ]
+);
 
 function HomeScreen() {
+  useEffect(() => {
+    requestStoragePermission();
+  }, []);
+  async function requestStoragePermission() {
+    try {
+      if (Platform.OS === 'android') {
+        const alreadyGranted = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+        );
+
+        if (alreadyGranted) {
+          console.log('Permission already granted');
+          return;
+        }
+  
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Storage Permission',
+            message: 'This app needs access to your storage to save files.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          }
+        );
+  
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Storage permission granted');
+        } else {
+          console.log('Storage permission denied');
+        }
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  }
+  
+
   const [data, setdata] = useState('');
   const [imageurl, setimageurl] = useState('');
   const [imgpath, setimgpath] = useState('');
@@ -73,21 +124,17 @@ function HomeScreen() {
         console.log(e);
       });
   };
-  const saveimg = () => {
+  const saveimg = async () => {
     try {
-      const newPath = RNFS.DownloadDirectoryPath + Date.now() + 'qr.jpg';
-      RNFS.moveFile(imgpath, newPath)
-        .then(r => {
-          console.log('move done');
-          ToastAndroid.show('SAVED', ToastAndroid.CENTER, ToastAndroid.SHORT);
-        })
-        .catch(e => {
-          console.log(e);
-        });
+      const newPath = `${RNFS.DownloadDirectoryPath}/qr_${Date.now()}.jpg`;
+      await RNFS.moveFile(imgpath, newPath);
+      console.log('Image saved to', newPath);
+      ToastAndroid.show('Image saved successfully', ToastAndroid.SHORT);
     } catch (error) {
-      console.log(error);
+      console.error('Failed to save image:', error);
     }
   };
+
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <TouchableOpacity
@@ -144,7 +191,6 @@ function HomeScreen() {
             height: 200,
             bottom: 40,
             alignContent: 'center',
-          
           }}
           source={{uri: `data:image/gif;base64,${imageurl}`}}
         />
